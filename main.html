@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shay & Roka - Love Puzzle</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to top right, #ffe6f0, #e6f0ff);
+      overflow: hidden;
+    }
+    .game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .choose-text {
+      position: absolute;
+      top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #cc3366;
+      background: #fff0f5;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: 2px dashed #f08080;
+    }
+    .characters-group {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      position: absolute;
+      bottom: 20%;
+    }
+    .character-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+    .character {
+      width: 150px;
+      transition: all 0.8s ease-in-out;
+    }
+    .character-name {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ff69b4;
+      background: #fff;
+      padding: 5px 10px;
+      border-radius: 10px;
+      border: 1px solid #ffb6c1;
+    }
+    .meet-point {
+      position: absolute;
+      left: 50%;
+      bottom: 40%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 192, 203, 0.5);
+      border-radius: 50%;
+      border: 2px dashed #ff69b4;
+    }
+    .heart {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 100px;
+      height: 90px;
+      background: red;
+      clip-path: path("M 50 15 C 35 -5 0 25 50 75 C 100 25 65 -5 50 15 Z");
+      animation: heartPulse 2s forwards;
+      animation-play-state: paused;
+    }
+    @keyframes heartPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+    .puzzle-box {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      text-align: center;
+      width: 320px;
+      min-height: 150px;
+      position: relative;
+    }
+    .puzzle-box button {
+      background: #ff85a2;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    .envelope {
+      width: 80px;
+      height: 50px;
+      background: #fff;
+      border: 2px solid #ff85a2;
+      margin: 10px auto;
+      position: relative;
+      clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
+    }
+    .mini-heart {
+      width: 30px;
+      height: 25px;
+      background: red;
+      clip-path: path("M 15 5 C 10 -5 0 5 15 25 C 30 5 20 -5 15 5 Z");
+      margin: 0 auto;
+    }
+    .letter {
+      width: 90%;
+      min-height: 100px;
+      background: #fff0f5;
+      border: 2px dashed #f08080;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      color: #cc3366;
+      margin: 10px auto;
+      border-radius: 10px;
+      white-space: pre-wrap;
+    }
+    .decor-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .decor-options button {
+      font-size: 18px;
+    }
+    #letterInput {
+      width: 90%;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #f08080;
+      font-family: 'Courier New', monospace;
+      color: #cc3366;
+      background: #fffafc;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="choose-text">Choose a character to begin 💞</div>
+
+    <div class="characters-group">
+      <div class="character-wrapper" onclick="startGame('shay')">
+        <img id="shay" class="character" src="shay.png" alt="Shay" />
+        <div class="character-name">Shay</div>
+      </div>
+      <div class="character-wrapper" onclick="startGame('roka')">
+        <img id="roka" class="character" src="roka.png" alt="Roka" />
+        <div class="character-name">Roka</div>
+      </div>
+    </div>
+
+    <div class="meet-point"></div>
+    <div class="heart" id="heart"></div>
+
+    <div class="puzzle-box" id="puzzleBox" style="display:none;">
+      <p id="puzzleText">Level 1: Put this heart on the envelope 🧡✉️</p>
+      <div id="puzzleVisual"></div>
+      <textarea id="letterInput" style="display:none;" placeholder="Write your message here..."></textarea>
+      <div class="decor-options" id="decorOptions" style="display:none;">
+        <button onclick="addDecor('🌟')">🌟</button>
+        <button onclick="addDecor('💌')">💌</button>
+        <button onclick="addDecor('🌸')">🌸</button>
+        <button onclick="addDecor('🎀')">🎀</button>
+      </div>
+      <button onclick="nextPuzzle()">Do it!</button>
+    </div>
+  </div>
+
+  <script>
+    let puzzleLevel = 0;
+    let selectedCharacter = null;
+    let letterContent = "Dear Shay/Roka,\nYou light up my heart ❤️";
+
+    const puzzles = [
+      "Level 1: Put this heart on the envelope 🧡✉️",
+      "Level 2: Write something in the letter ✍️",
+      "Level 3: Add decorations in the letter 🎀🌸",
+      "Final Step: Deliver the letter! 📬"
+    ];
+
+    function startGame(character) {
+      selectedCharacter = character;
+      document.getElementById("puzzleBox").style.display = "block";
+      document.getElementById("shay").style.pointerEvents = "none";
+      document.getElementById("roka").style.pointerEvents = "none";
+      document.querySelector(".choose-text").style.display = "none";
+      updatePuzzleVisual();
+    }
+
+    function nextPuzzle() {
+      if (puzzleLevel === 1) {
+        letterContent = document.getElementById("letterInput").value || letterContent;
+      }
+
+      puzzleLevel++;
+      if (puzzleLevel < puzzles.length) {
+        document.getElementById("puzzleText").innerText = puzzles[puzzleLevel];
+        updatePuzzleVisual();
+      } else {
+        document.getElementById("puzzleBox").style.display = "none";
+        meetCharacters();
+      }
+    }
+
+    function updatePuzzleVisual() {
+      const visual = document.getElementById("puzzleVisual");
+      const decorBox = document.getElementById("decorOptions");
+      const letterInput = document.getElementById("letterInput");
+      visual.innerHTML = "";
+      decorBox.style.display = "none";
+      letterInput.style.display = "none";
+
+      if (puzzleLevel === 0) {
+        visual.innerHTML = '<div class="mini-heart"></div><div class="envelope"></div>';
+      } else if (puzzleLevel === 1) {
+        visual.innerHTML = '<div class="letter">' + letterContent + '</div>';
+        letterInput.style.display = "block";
+      } else if (puzzleLevel === 2) {
+        visual.innerHTML = '<div class="letter" id="decoratedLetter">' + letterContent + '</div>';
+        decorBox.style.display = "flex";
+      } else if (puzzleLevel === 3) {
+        const finalText = document.getElementById("decoratedLetter")
+          ? document.getElementById("decoratedLetter").innerText
+          : letterContent;
+        visual.innerHTML = '<div class="letter">' + finalText + '</div>';
+      }
+    }
+
+    function addDecor(symbol) {
+      const letter = document.getElementById("decoratedLetter");
+      if (letter) letter.innerText += " " + symbol;
+    }
+
+    function meetCharacters() {
+      document.getElementById("shay").style.left = "calc(50% - 75px)";
+      document.getElementById("roka").style.right = "calc(50% - 75px)";
+      setTimeout(() => {
+        document.getElementById("heart").style.animationPlayState = 'running';
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
